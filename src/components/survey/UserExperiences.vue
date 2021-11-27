@@ -111,7 +111,10 @@ export default {
       this.thePressIdx = idx; 
     },
     updateEdtion(name,rating,id){
-      console.log(name,rating,id);
+      if(name===''||rating===''){
+        return;
+      }
+      this.dataInvalid = false;
       fetch(
         `https://vue-http-demo-e1e10-default-rtdb.firebaseio.com/surveys/${id}.json`,
         {
