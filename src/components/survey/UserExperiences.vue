@@ -20,7 +20,9 @@
           :key="result.id"
           :name="result.name"
           :rating="result.rating"
+          :editIndex="thePressIdx"
           @deleteItem="deleteExperience(result.id)"
+          @pressUpdate="(name,rating)=>updateEdtion(name,rating,result.id)"
         ></survey-result>
       </ul>
     </base-card>
@@ -28,12 +30,14 @@
 </template>
 
 <script>
+import BaseCard from '../UI/BaseCard.vue';
 import SurveyResult from './SurveyResult.vue';
 
 export default {
   props: ['results', 'pressLoading'],
   components: {
     SurveyResult,
+    BaseCard,
   },
   data() {
     return {
@@ -41,6 +45,7 @@ export default {
       isLoading: false,
       error: null,
       press: false,
+      thePressIdx: -1,
     };
   },
   watch: {
@@ -102,6 +107,36 @@ export default {
           this.error = error.message;
         });
     },
+    tellIndexPress(idx){
+      this.thePressIdx = idx; 
+    },
+    updateEdtion(name,rating,id){
+      console.log(name,rating,id);
+      fetch(
+        `https://vue-http-demo-e1e10-default-rtdb.firebaseio.com/surveys/${id}.json`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: name,
+            rating: rating,
+          }),
+        }
+      )
+        .then((response) => {
+          if (response.ok) {
+            this.loadExperiences();
+          } else {
+            throw new Error('could not save data');
+          }
+        })
+        .catch((error) => {
+          this.error = error.message;
+        });
+    }
+
   },
   mounted() {
     this.loadExperiences();

@@ -1,22 +1,43 @@
 <template>
-  <li>
+  <li @click="toggleButton">
     <p>
       <span class="highlight">{{ name }}</span> rated the learning experience
       <span :class="ratingClass">{{ rating }}</span>.
       <base-button @click="$emit('deleteItem')">delete</base-button>
+      <base-card v-if="isShow">
+        <edit-submit @click="stopParentEvent" @updateSubmit="(name,rating)=>$emit('pressUpdate',name,rating)"></edit-submit>
+      </base-card>
+      
     </p>
   </li>
 </template>
 
 <script>
+import EditSubmit from  './EditSubmit.vue';
 export default {
-  props: ['name', 'rating'],
-  emits:['deleteItem']
+  components:{
+    EditSubmit
+  }
+  ,props: ['name', 'rating'],
+  emits:['deleteItem','pressUpdate']
   ,computed: {
     ratingClass() {
       return 'highlight rating--' + this.rating;
     },
   },
+  data(){
+    return {
+      isShow:false
+    };
+  },
+  methods:{
+    toggleButton(){
+        this.isShow = !this.isShow;
+    },
+    stopParentEvent(e){
+      e.stopPropagation();
+    },
+  }
 };
 </script>
 
